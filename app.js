@@ -35,7 +35,7 @@ app.use(cookieParser());
 //Set Port
 app.set('port', (process.env.PORT || 3000));
 // Angular DIST output folder
-app.use(express.static(path.join(__dirname, 'client/dist/client')));
+app.use(express.static(path.join(__dirname, 'client/')));
 
 // API location
 /*------routes Define---------------------*/
@@ -47,7 +47,7 @@ app.use('/books', Book);
 /*---------routes end---------------------*/
 // Send all other requests to the Angular app
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/dist/client/index.html'));
+    res.sendFile(path.join(__dirname, 'client/index.html'));
 });
 
 http.createServer(app).listen(app.get('port'), function(){
