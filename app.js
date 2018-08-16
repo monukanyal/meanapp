@@ -1,7 +1,3 @@
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-const hostname = 'localhost';
-
 const express = require('express');
 var app = express();
 const http = require('http');
@@ -36,7 +32,8 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 //app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-
+//Set Port
+app.set('port', (process.env.PORT || 3000));
 // Angular DIST output folder
 app.use(express.static(path.join(__dirname, 'client/dist/client')));
 
@@ -53,31 +50,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/dist/client/index.html'));
 });
 
-//Set Port
-const port = process.env.PORT || '8080';
-app.set('port', port);
-
-if (cluster.isMaster) {
-  console.log(`Master ${process.pid} is running`);
-
-  // Fork workers.
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-
-  //Check if work id is died
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
-  });
-
-} else {
-  // This is Workers can share any TCP connection
-  // It will be initialized using express
-  console.log(`Worker ${process.pid} started`);
-
-const server = http.createServer(app);
-server.listen(port, hostname, () => {
-console.log(`Server running at http://${hostname}:${port}/ !!!`);
+http.createServer(app).listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
 });
 
-}
